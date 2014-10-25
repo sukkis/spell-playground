@@ -1,0 +1,15 @@
+package com.sukkeli.tutorial;
+
+import Arraylist;
+
+public class MyLibrary {
+
+	String name;
+	Object books;
+	Arraylist people;
+
+	public MyLibrary(String string) {
+		// TODO Auto-generated constructor stub
+	}
+
+}

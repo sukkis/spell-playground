@@ -1,0 +1,6 @@
+ArrayList<String> list = new ArrayList<String>();
+
+Book b1 = new Book("Great Expectations");
+Book b2 = new Book("War and Peace");
+list.add("test1");
+list.add("test2");

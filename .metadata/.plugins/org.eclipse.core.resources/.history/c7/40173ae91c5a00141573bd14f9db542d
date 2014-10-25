@@ -1,0 +1,16 @@
+package com.sukkeli.tutorial;
+import java.util.ArrayList;
+
+public class MyLibrary {
+
+	String name;
+	Arraylist<Book> books;
+	Arraylist<Person> people;
+
+	public MyLibrary(String name) {
+		this.name = name;
+		books = new ArrayList<Book>();
+		people = new ArrayList<Person>();
+	}
+
+}

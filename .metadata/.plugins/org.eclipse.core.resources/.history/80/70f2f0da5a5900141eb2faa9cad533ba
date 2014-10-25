@@ -1,0 +1,11 @@
+package com.sukkeli.tutorial;
+
+public class MyLibrary {
+
+	public Object name;
+
+	public MyLibrary(String string) {
+		// TODO Auto-generated constructor stub
+	}
+
+}
