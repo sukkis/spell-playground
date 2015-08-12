@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?><testrun name="PersonTest" project="TotalBeginner" tests="4" started="4" failures="0" errors="0" ignored="0">
-  <testsuite name="com.sukkeli.tutorial.PersonTest" time="0.0">
-    <testcase name="testSetMaximumBooks" classname="com.sukkeli.tutorial.PersonTest" time="0.0"/>
-    <testcase name="testToString" classname="com.sukkeli.tutorial.PersonTest" time="0.0"/>
-    <testcase name="testSetName" classname="com.sukkeli.tutorial.PersonTest" time="0.0"/>
-    <testcase name="testPerson" classname="com.sukkeli.tutorial.PersonTest" time="0.0"/>
-  </testsuite>
-</testrun>

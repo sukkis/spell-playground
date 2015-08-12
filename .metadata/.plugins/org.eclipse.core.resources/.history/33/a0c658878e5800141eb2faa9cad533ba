@@ -1,5 +1,0 @@
-ArrayList<String> list = new ArrayList<String>();
-
-Book b1 = new Book("Great Expectations")
-list.add("test1");
-list.add("test2");
