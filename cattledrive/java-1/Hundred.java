@@ -25,9 +25,6 @@ class Hundred {
                 System.out.println("");
                 rowCounter = 0;
             }
-
-
         }
-
     }
 }
