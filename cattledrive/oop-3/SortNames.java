@@ -5,18 +5,25 @@ import java.util.*;
 import java.lang.Exception.*;
 import com.javaranch.common.TextFileIn;
 
-class SortNames{
+class SortNames
+{
+
+    ArrayList<String> listOfNames = new ArrayList<String>();
+    private static final String INPUT_FILE = "names.txt";
 
     protected ArrayList<String> readNamesFromFile(String fileName) throws Exception {
-        ArrayList<String> listOfNames = new ArrayList<String>();
         TextFileIn in = new TextFileIn(fileName);
         boolean done = false;
 
-        while (! done){
+        while (! done)
+        {
             String s = in.readLine();
-            if (s == null){
+            if (s == null)
+            {
                 done = true;
-            } else {
+            }
+            else
+            {
                 listOfNames.add(s);
                 listOfNames.toString();
             }
@@ -24,12 +31,14 @@ class SortNames{
         in.close();
         return listOfNames;
     }
-    // sort by last name
 
-    // sort by first name
+    protected ArrayList<String> sortedByFirstName(String inputFile)
+    {
+        return sort(readNamesFromFile(inputFile));
+    }
 
-
-    public static void main (String[] args){
+    public static void main (String[] args)
+    {
         String sortOrder = "";
         if (args.length > 0) {
             sortOrder = args[0];
@@ -38,8 +47,11 @@ class SortNames{
         // call read-file
         System.out.println("Printing names without sorting: ");
         SortNames sorter = new SortNames();
-        try {
+        try
+        {
             System.out.println(sorter.readNamesFromFile("names.txt"));
+            System.out.println("Trying to sort by first name: ");
+            System.out.println(sorter.sortedByFirstName(INPUT_FILE));
         }
         catch (Exception e) {
             System.out.println("File not found, check path and file name.");
@@ -48,6 +60,7 @@ class SortNames{
         // test sort by last name
 
         // test sort by first name
+
 
     }
 }
