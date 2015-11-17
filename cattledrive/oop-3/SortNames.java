@@ -40,6 +40,12 @@ class SortNames
         return listOfNames;
     }
 
+    protected ArrayList<String> sortedByLastName(String inputFile) throws Exception
+    {
+        Collections.sort(listOfNames, new SurnameComparator());
+        return listOfNames;
+    }
+
     public static void main (String[] args)
     {
         String sortOrder = "";
@@ -53,17 +59,14 @@ class SortNames
         try
         {
             System.out.println(sorter.readNamesFromFile("names.txt"));
-            System.out.println("Trying to sort by first name: ");
+            System.out.println("Sort by first name: ");
             System.out.println(sorter.sortedByFirstName(INPUT_FILE));
+            System.out.println("Sort by last name: ");
+            System.out.println(sorter.sortedByLastName(INPUT_FILE));
         }
         catch (Exception e) {
             System.out.println("File not found, check path and file name.");
             e.printStackTrace();
         }
-        // test sort by last name
-
-        // test sort by first name
-
-
     }
 }
