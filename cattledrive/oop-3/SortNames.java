@@ -8,10 +8,11 @@ import com.javaranch.common.TextFileIn;
 class SortNames
 {
 
-    ArrayList<String> listOfNames = new ArrayList<String>();
     private static final String INPUT_FILE = "names.txt";
+    ArrayList<String> listOfNames = new ArrayList<String>();
 
-    protected ArrayList<String> readNamesFromFile(String fileName) throws Exception {
+    protected ArrayList<String> readNamesFromFile(String fileName) throws Exception
+    {
         TextFileIn in = new TextFileIn(fileName);
         boolean done = false;
 
@@ -29,12 +30,14 @@ class SortNames
             }
         }
         in.close();
+
         return listOfNames;
     }
 
-    protected ArrayList<String> sortedByFirstName(String inputFile)
+    protected ArrayList<String> sortedByFirstName(String inputFile) throws Exception
     {
-        return sort(readNamesFromFile(inputFile));
+        Collections.sort(listOfNames);
+        return listOfNames;
     }
 
     public static void main (String[] args)
