@@ -21,17 +21,16 @@ public class Thing
     public String getDescription()
     {
         System.out.println("----from getDescription()----");
-        System.out.println("I am a " + this.getClass());
-        System.out.println("My name is " + name);
-        System.out.println("My serialNumber is " + serialNumber);
-        System.out.println("My hashcode is " + this.hashCode());
-
-        return "Thing " + name + serialNumber;
+        return "I am from " + this.getClass() + "\n my name is " +
+            name + "\n my number is " + serialNumber +
+            "\n and my hashcode is " + this.hashCode();
     }
 
     long getSerialNumber()
     {
-        return 1000000 + counter;
+        long result = counter + 1000000;
+        counter++;
+        return result;
     }
 
 }
