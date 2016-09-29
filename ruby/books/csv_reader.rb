@@ -6,8 +6,6 @@ require_relative 'book_in_stock'
 
 class CsvReader
 
-  attr_accessor :books_from_files
-
   def initialize()
     @books_in_stock = []
   end
