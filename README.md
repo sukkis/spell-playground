@@ -1,4 +1,4 @@
 spell-playground
 ================
 
-Java and Ruby practice
+Programming practice
