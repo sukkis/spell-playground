@@ -2,6 +2,10 @@
 
 # Breaks down a matrix to a normal csv representation,
 # with a header and data rows
+# Usage: - have input.txt in the same directory as create_rows.rb
+#        - "ruby create_rows.rb" to run the program
+#        - see results in output.txt
+# Author: petterisu
 
 lines = Array.new
 
@@ -20,7 +24,7 @@ end
 def write_transformed_row(airline1, airline2, factor)
 	open('output.txt', 'a') do |f|
 		f.puts "#{airline1};#{airline2};#{factor}" if (airline1 != '' && !(factor.count("a-zA-Z") > 0))
-		puts "#{airline1};#{airline2};#{factor}" if airline1 != '' && !(factor.count("a-zA-Z") > 0)
+		#puts "#{airline1};#{airline2};#{factor}" if airline1 != '' && !(factor.count("a-zA-Z") > 0)
 	end
 end
 
