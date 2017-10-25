@@ -1,4 +1,5 @@
 -- List comprehensions
+import Data.List
 
 sumElementsSquared :: Integer -> Integer
 sumElementsSquared n = sum [x^2 | x <- [1..n]]
