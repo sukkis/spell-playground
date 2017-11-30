@@ -13,24 +13,24 @@ import Graphics.X11.ExtraTypes.XF86                -- allows referring to extra 
 main = xmonad . myConfig =<< spawnPipe "xmobar"
 
 myConfig pipe = defaultConfig {
-        startupHook = startup,
-        manageHook = myManageHook,
-        layoutHook = smartBorders . avoidStruts $ layoutHook defaultConfig, -- smartBorders removes borders from full screen app
-        handleEventHook = docksEventHook <+> handleEventHook defaultConfig,
-        logHook = myLogHook pipe,
-        terminal = "urxvt",
-        workspaces = myWorkSpaces,
-        modMask = mod4Mask -- Mod to Windows key
+    startupHook = startup,
+    manageHook = myManageHook,
+    layoutHook = smartBorders . avoidStruts $ layoutHook defaultConfig, -- smartBorders removes borders from full screen app
+    handleEventHook = docksEventHook <+> handleEventHook defaultConfig,
+    logHook = myLogHook pipe,
+    terminal = "urxvt",
+    workspaces = myWorkSpaces,
+    modMask = mod4Mask -- Mod to Windows key
     } `additionalKeys` myShortCuts
 
 -- Workspace names
-myWorkSpaces = ["1-urxvt","2-code","3-firefox","4-urxvt","5-viewer","6-spotify","7-messaging","8-keepassx","9-minimize"]
+myWorkSpaces = ["1-urxvt","2-code","3-firefox","4-container","5-viewer","6-spotify","7-messaging","8-keepassx","9-minimize"]
 
 -- Make workspace names visible in Xmobar
 myLogHook pipe = workspaceNamesPP xmobarPP {
-  ppOutput = hPutStrLn pipe,
-  ppTitle  = xmobarColor "Red" "" . shorten 50}
-                 >>= dynamicLogWithPP 
+    ppOutput = hPutStrLn pipe,
+    ppTitle  = xmobarColor "Red" "" . shorten 50}
+    >>= dynamicLogWithPP 
 
 
 -- Define ManageHooks. With composeAll you can combine options, like in "= manageDocks <+> manageHook defaultConfig"
@@ -45,18 +45,18 @@ myManageHook = composeAll [
 -- Define keyboard shortcuts
 myShortCuts = [
     ((mod4Mask .|. shiftMask, xK_z), spawn "xscreensaver-command -lock"),
-    ((controlMask, xK_Print), spawn "sleep 0.2; scrot -s"),                     -- print screen with resizable picture area
-    ((0, xK_Print), spawn "scrot"),                                             -- regular print screen
     ((mod4Mask .|. shiftMask, xK_e), spawn "emacs"),
     ((mod4Mask .|. shiftMask, xK_f), spawn "firefox"),
-    ((mod4Mask .|. shiftMask, xK_t), sendMessage ToggleStruts),                 -- toggle Xmobar visible/hidden
-    ((0                     , xF86XK_AudioLowerVolume), spawn "amixer -q sset Master 2%-"),  -- lower volume
-    ((0                     , xF86XK_AudioRaiseVolume), spawn "amixer -q sset Master 2%+"),  -- raise volume
-    ((0                     , xF86XK_AudioMute), spawn "amixer set Master toggle")    -- mute
+    ((mod4Mask .|. shiftMask, xK_t), sendMessage ToggleStruts),           -- toggle Xmobar visible/hidden
+    ((controlMask, xK_Print       ), spawn "sleep 0.2; scrot -s"),        -- print screen with resizable picture area
+    ((0  ,         xK_Print       ), spawn "scrot" ),                     -- regular print screen
+    ((0  , xF86XK_AudioLowerVolume), spawn "amixer -q sset Master 2%-"),  -- lower volume
+    ((0  , xF86XK_AudioRaiseVolume), spawn "amixer -q sset Master 2%+"),  -- raise volume
+    ((0  , xF86XK_AudioMute       ), spawn "amixer set Master toggle")    -- mute
     ]
 
 -- On starting Xmonad
 startup :: X ()
 startup = do
-spawn "feh --bg-fill ~/Pictures/wallpapers/miami.jpg &"
-setDefaultCursor xC_pirate
+    spawn "feh --bg-fill ~/Pictures/wallpapers/miami.jpg &"
+    setDefaultCursor xC_pirate
