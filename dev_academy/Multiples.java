@@ -1,6 +1,7 @@
 
 // Multiples of 3 or 5
-// Only count ones, if both conditions are true
+// Only count ones, if both conditions are true.
+//RRequires an integer input parameter.
 
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -10,19 +11,26 @@ import java.util.List;
 class Multiples {
 
     public static void main( String[] args ) {
-        List<Integer> numbers = new ArrayList<Integer>();
-        
-        Integer seed = Integer.parseInt(args[0]); 
-	System.out.println("Seed is : " + seed);
-
-	for (Integer i = 0; i < seed; i++) {
-            numbers.add(i);
-	}
+       
+	// Throws arrayIndexOutOfBounds when using without input parameter 
+        List<Integer> numbers = populateListWithNumbers(args[0]); 
 
 	System.out.println("Raw list : " + numbers);
 	System.out.println("Filtered : " + filterList(numbers));
 	System.out.println("Sum of filtered list : " + sumList(filterList(numbers)));
 	
+    }
+
+
+    public static List<Integer> populateListWithNumbers(String seedNumber) {
+        List<Integer> numbers = new ArrayList<Integer>();
+	Integer seed = Integer.parseInt(seedNumber);
+
+	for (Integer i = 0; i < seed; i++) {
+	    numbers.add(i);
+	}
+    
+        return numbers;
     }
 
     public static List<Integer> filterList( List<Integer> rawList) {
