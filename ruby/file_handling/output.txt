@@ -1,0 +1,17 @@
+airline1;airline2;factor
+abc;abc;1
+abc;bcd;1
+abc;cde;0,7
+abc;def;1
+bcd;abc;1
+bcd;bcd;0,7
+bcd;cde;1
+bcd;def;1
+cde;abc;1
+cde;bcd;1
+cde;cde;1
+cde;def;1
+def;abc;0,7
+def;bcd;1
+def;cde;1
+def;def;1
