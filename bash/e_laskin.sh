@@ -3,8 +3,7 @@
 # Calculator that describes the result in stars
 # Usage: bash laskin.sh 2 + 11
 # Adds two and eleven.
-#
-# Author: Petteri Suckman
+
 
 TULOS=$(( $1 $2 $3 ))
 echo "Tulos on: $TULOS"
