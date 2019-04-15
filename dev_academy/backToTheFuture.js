@@ -1,14 +1,7 @@
 /*
- * This is a JavaScript Scratchpad.
- *
- * Enter some JavaScript, then Right Click or choose from the Execute Menu:
- * 1. Run to evaluate the selected text (Ctrl+R),
- * 2. Inspect to bring up an Object Inspector on the result (Ctrl+I), or,
- * 3. Display to insert the result in a comment after the selection. (Ctrl+L)
- */
-/*
+Back to the future code wars exercise
 
-
+Similar months:
     January & October
     April & July
     September & December
@@ -25,7 +18,8 @@ to return the following string:
 
 */
 function solution(input) {
-  inputArray = input.split(' ', 3);
+  // Should probably check the inputs for validity. Omitted here.  
+  inputArray = input.split(' ', 3);  
   weekday    = inputArray[0];
   dayOfMonth = inputArray[1];
   month      = inputArray[2];
@@ -34,23 +28,23 @@ function solution(input) {
   
   switch (month) {
     case 'January':
-      monthBack = "October"; //31
+      monthBack = "October"; // 31 days in October. Marty can get to future from any day in January.
       break;
  
     case 'February':
-      monthBack = 'March';  //31
+      monthBack = 'March';  // 31
       break;
     
     case 'March':  //31
-      monthBack = 'November'; //30   -----
+      monthBack = 'November'; // 30 days. This special case handled with isValidDay
       break;
     
     case 'April':
-      monthBack = 'July'; //31
+      monthBack = 'July'; // 31
       break;
 
     case 'September':
-      monthBack = 'December'; //31
+      monthBack = 'December'; // 31
       break;
     
     default :
@@ -58,7 +52,7 @@ function solution(input) {
       break
   }
     
-  if ((monthBack !== "NO") && !((month === 'March') && (dayOfMonth == 31))) {
+    if ((monthBack !== "NO") && (isValidDay)) {
      return "I'm leaving here on " + weekday + " " + dayOfMonth + " of " + monthBack;
   } else {
      return "Doc, I can't get back to the future!"; 

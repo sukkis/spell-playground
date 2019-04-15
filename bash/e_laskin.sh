@@ -32,7 +32,7 @@ function laske_tahdet
 
   while [ $JAKOJAANNOS -gt 0 ]
   do
-    echo -n " * "
+    echo " * "
     JAKOJAANNOS=$(( $JAKOJAANNOS -1 ))
   done
 
