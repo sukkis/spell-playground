@@ -1,6 +1,6 @@
 #!/bin/bash
 
-DIRECTORY=/home/petterisu/kb
+DIRECTORY=/home/user/kb
 
 if [ $1 -z ]
 then 
