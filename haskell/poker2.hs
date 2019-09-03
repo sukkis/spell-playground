@@ -34,3 +34,8 @@ runTwice f = do
   _ <- f
   f 
 
+deleteCard :: Card -> [Card] -> [Card]
+deleteCard n xs = filter (\e -> e/=n) xs  
+
+addCard :: Card -> [Card] -> [Card]
+addCard x xs = x:xs
