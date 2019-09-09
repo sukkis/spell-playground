@@ -1,0 +1,2 @@
+URxvt.font: xft:Fira Mono:size=14
+URxvt.font: xft:Hack Rgular:size=14
