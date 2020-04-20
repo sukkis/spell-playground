@@ -4,8 +4,11 @@
 
 import           System.Random
 
-starman :: String -> Int -> IO ()
-starman word n = turn word ['-' | _ <- word] n
+starman :: Int -> IO ()
+starman n =do
+  i  <- randomRIO (0,6)
+  let word = mkSecret i wordList
+  turn word ['-' | _ <- word] n
 
 check :: String -> String -> Char -> (Bool, String)
 check word display c =
@@ -29,11 +32,9 @@ mkguess word display n =
      let n' = if correct then n else n-1
      turn word display' n'
 
-w :: IO ()
-w = mkSecret wordList
-
-mkSecret :: [String] -> IO ()
-mkSecret wList = randomRIO (0,6) >>= \x -> print (wList !! x)
+-- select word from list
+mkSecret :: Int -> [String] -> String
+mkSecret randomNum wList = (wList !! randomNum)
 
 wordList :: [String]
 wordList = ["possibility", "exuberance", "vitality",
