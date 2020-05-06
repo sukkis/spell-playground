@@ -2,6 +2,11 @@ data Tree = Leaf
     | Node Int Tree Tree
     deriving Show
 
+-- Sums up tree nodes' values
+treeSum :: Tree -> Int
+treeSum Leaf = 0
+treeSum (Node x leftSubTree rightSubTree) = x + (treeSum leftSubTree) + (treeSum rightSubTree)
+
 -- Gets value of a node.
 getValue :: Tree -> Int
 getValue Leaf         = 0
