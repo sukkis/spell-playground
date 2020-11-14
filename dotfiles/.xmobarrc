@@ -1,0 +1,28 @@
+Config
+{ bgColor =      "black"
+, fgColor =      "white"
+, border =       BottomB
+, borderColor = "grey"
+, commands = -- what information to show
+  -- network activity monitor (dynamic interface resolution)
+  [ 
+  --Run DynNetwork [] 10 -- network traffic
+  --, 
+  Run Wireless "wlp3s0" ["-t", "Wifi: [<qualitybar>] <essid>"] 10
+  , Run Memory ["-t" ,"RAM: %"] 10 -- RAM usage
+  , Run BatteryP ["BAT0"]
+                ["-t", "<acstatus>"
+                , "-L", "10", "-H", "80"
+                , "-l", "red", "-h", "green"
+                , "--", "-O", "Charging", "-o", "Battery: <left>%"
+                ] 10
+  , Run Volume "default" "Master" [] 10
+  , Run Date "%d %b %T" "mydate" 10
+  , Run StdinReader -- text coming from xmonad
+  , Run Kbd [ 
+              ("us"         , "<fc=#8B0000>US</fc>")
+            ]                             ]
+  ]
+-- where to show command information
+, template = "%StdinReader% }{ %memory% | %default:Master% | %wlp3s0wi% | %battery% | %mydate% | %kbd% "
+}
