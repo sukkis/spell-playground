@@ -18,7 +18,7 @@ public class FontChanger {
 
     public static void replaceFont(String font){
         try {
-            Path path=Paths.get("/home/petsa/git/spell-playground/java/test.txt");
+            Path path=Paths.get("/home/$USER/git/spell-playground/java/test.txt");
             Stream <String> lines = Files.lines(path);
             List <String> replaced = lines
                 .filter(line -> line.matches("URxvt.font")) 
@@ -34,7 +34,7 @@ public class FontChanger {
     }
 
     public static HashMap readLines() {
-        String fileName = "/home/petsa/git/spell-playground/java/fonts.txt";
+        String fileName = "/home/$USER/git/spell-playground/java/fonts.txt";
         HashMap<Integer,String> fonts = new HashMap();
         Integer n = 0;
 		//read file into stream, try-with-resources
