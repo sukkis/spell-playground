@@ -12,7 +12,7 @@
   (package-refresh-contents))
 
 ;; Enable robot-mode for Robot Framework file editing
-(load-file "/home/petsa/.emacs.d/extend/robot-mode/robot-mode.el")
+(load-file "/home/$USER/.emacs.d/extend/robot-mode/robot-mode.el")
 (add-to-list 'auto-mode-alist '("\\.txt\\'" . robot-mode))
 
 ;; Modify looks & startup
