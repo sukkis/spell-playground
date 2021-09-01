@@ -1,6 +1,9 @@
-;; Initialize package sources
-(require 'package)
+;;; package --- Summary
+;;; Commentary:
+;;  $USER configuration for software development, tasks and writing.
 
+;;; Code:
+(require 'package)
 (setq package-archives '(("melpa" . "https://melpa.org/packages/")
                          ("org" . "https://orgmode.org/elpa/")
                          ("elpa" . "https://elpa.gnu.org/packages/")))
@@ -11,7 +14,7 @@
   (package-refresh-contents))
 
 ;; myPackages contains a list of package names
-(defvar myPackages
+(defvar work-basic-packages
   '(better-defaults                 ;; Set up some better Emacs defaults
     blacken
     pylint
@@ -25,7 +28,11 @@
 (mapc #'(lambda (package)
           (unless (package-installed-p package)
             (package-install package)))
-      myPackages)
+      work-basic-packages)
+
+(setq flycheck-python-pylint-executable "python3")
+(global-flycheck-mode)
+
 
 ;; Delete whitespace from files.
 (add-hook 'write-file-hooks 'delete-trailing-whitespace)
@@ -60,3 +67,6 @@
 ;;   to open buffers in the existing session
 ;;   instead of having different emacs sessions running
 (server-mode 1)
+
+(provide 'init)
+;;; Init.el ends here
