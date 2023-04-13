@@ -11,8 +11,7 @@ struct person {
     char died[20];
 } people[MAX_PEOPLE];
 
-
-int populate(){
+int populate() {
     strcpy(people[0].name, "Elisabeth C. Stanton");
     strcpy(people[0].known_for, "Women's rights");
     strcpy(people[0].country, "USA");
@@ -37,26 +36,25 @@ int populate(){
     strcpy(people[3].born, "Jan 1400");
     strcpy(people[3].died, "Feb 1462");
 
-
-
     return 0;
 }
 
-
-int main(){
+int main() {
     populate();
     printf("Name    Known for    Country    Born    Died\n");
     printf("********************************************\n");
 
-    for (int n = 0; n < MAX_PEOPLE; n++){
-	printf("%s, %s, %s, %s, %s \n", people[n].name, people[n].known_for, people[n].country, people[n].born, people[n].died);
+    for (int n = 0; n < MAX_PEOPLE; n++) {
+        printf("%s, %s, %s, %s, %s \n", people[n].name, people[n].known_for,
+               people[n].country, people[n].born, people[n].died);
     }
 
     // With sorting
     printf("\n\n");
     printf("Name    Known for    Country    Born    Died\n");
     printf("********************************************\n");
-    for (int n = 3; n >= 0; n--){
-	printf("%s, %s, %s, %s, %s \n", people[n].name, people[n].known_for, people[n].country, people[n].born, people[n].died);
+    for (int n = 3; n >= 0; n--) {
+        printf("%s, %s, %s, %s, %s \n", people[n].name, people[n].known_for,
+               people[n].country, people[n].born, people[n].died);
     }
 }
