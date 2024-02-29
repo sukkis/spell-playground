@@ -10,6 +10,8 @@
 
 ;;; Code:
 ;; 1. Set up package archives and straight.el
+
+;; 2023-09-21 Made some breaking changes with https://github.com/rksm/emacs-rust-config/blob/master/init.el
 (setq straight-use-package-by-default t
       straight-repository-branch "develop"
       straight-cache-autoloads t
@@ -39,6 +41,14 @@
 (straight-use-package 'material-theme)
 (straight-use-package 'cyberpunk-theme)
 (straight-use-package 'autumn-light-theme)
+(straight-use-package 'darcula-theme)
+(straight-use-package 'leuven-theme)
+(straight-use-package 'darktooth-theme)
+(straight-use-package 'gruvbox-theme)
+(straight-use-package 'molokai-theme)
+(straight-use-package 'faff-theme)
+(straight-use-package 'afternoon-theme)
+
 (straight-use-package 'dockerfile-mode)
 (straight-use-package 'python-mode)
 (straight-use-package 'lsp-mode)
@@ -47,8 +57,9 @@
 (straight-use-package 'robot-mode)
 (straight-use-package 'nix-mode)
 (straight-use-package 'cc-mode)
-(straight-use-package 'rust-mode)
+					;(straight-use-package 'rust-mode)
 (straight-use-package 'rustic)
+(straight-use-package 'yasnippet)
 (straight-use-package 'helm-xref)
 (straight-use-package 'google-c-style)
 (straight-use-package 'clang-format)
@@ -59,13 +70,43 @@
 (straight-use-package 'projectile)
 (straight-use-package 'neotree)
 (straight-use-package 'magit)
+(straight-use-package 'notmuch)
+(straight-use-package 'greader)
 
 ;; 3. Configure the packages
-(use-package material-theme
+
+;; (straight-use-package
+;;  '(org-ai :type git :host github :repo "rksm/org-ai"
+;;           :local-repo "org-ai"
+;;           :files ("*.el" "README.md" "snippets")))
+
+(use-package org-ai
+  :straight t
+  :ensure t
+  :commands (org-ai-mode
+             org-ai-global-mode)
+  :init
+  (add-hook 'org-mode-hook #'org-ai-mode) ; enable org-ai in org-mode
+  (org-ai-global-mode) ; installs global keybindings on C-c M-a
   :config
-  (load-theme 'autumn-light t))    ; Other good themes: 'material' 'misterioso', 'tango-dark'
-;;; Dark and high contrast: cyberpunk
-;;; Light: autumn-lightd
+  (setq org-ai-default-chat-model "gpt-3.5-turbo-16k") ; if you are on the gpt-4 beta:
+  (org-ai-install-yasnippets)) ; if you are using yasnippet and want `ai` snippets
+
+(setq org-ai-openai-api-token (string-trim (shell-command-to-string "pass openai_personal")))
+
+;; Speech direction stuff
+(load "~/.emacs.d/extend/whisper.el/whisper.el")
+(require 'whisper)
+(require 'org-ai-talk)
+
+(use-package helm
+  :straight t
+  :config
+  (global-set-key (kbd "C-x f") 'helm-find-files)
+  )
+;; And use it everywhere you go
+(helm-mode 1)
+
 
 (use-package dockerfile-mode
   :mode ("Dockerfile\\'" . dockerfile-mode))
@@ -82,31 +123,132 @@
         lsp-gopls-complete-unimported t))
 
 (use-package lsp-mode
+  :ensure
   :hook (go-mode . lsp-deferred)
   :hook ((yaml-mode . lsp-deferred))
   :hook ((python-mode . lsp-deferred))
   :hook  (sh-mode . lsp-deferred)
   :hook (c-mode . lsp-deferred)
-  :commands lsp lsp-deferred
+  :commands lsp
+  :custom
+  ;; what to use when checking on-save. "check" is default, I prefer clippy
+  (lsp-rust-analyzer-cargo-watch-command "clippy")
+  (lsp-eldoc-render-all t)
+  (lsp-idle-delay 0.6)
+  ;; enable / disable the hints as you prefer:
+  (lsp-inlay-hint-enable t)
+  ;; These are optional configurations. See https://emacs-lsp.github.io/lsp-mode/page/lsp-rust-analyzer/#lsp-rust-analyzer-display-chaining-hints for a full list
+					;(lsp-rust-analyzer-display-lifetime-elision-hints-enable "skip_trivial")
+  (lsp-rust-analyzer-display-chaining-hints t)
+  (lsp-rust-analyzer-display-lifetime-elision-hints-use-parameter-names nil)
+  (lsp-rust-analyzer-display-closure-return-type-hints t)
+  (lsp-rust-analyzer-display-parameter-hints nil)
+  (lsp-rust-analyzer-display-reborrow-hints nil)
   :config
-  (setq lsp-auto-configure t
-        lsp-prefer-flymake nil
-        lsp-enable-snippet t))
+  (add-hook 'lsp-mode-hook 'lsp-ui-mode))
 
 (use-package lsp-ui
   :straight t
+  :ensure
   :commands lsp-ui-mode
   :custom
   (lsp-ui-peek-always-show t)
   (lsp-ui-sideline-show-hover t)
   (lsp-ui-doc-enable nil))
 
+(use-package flycheck :ensure)
+:straight t
+
 (use-package company
-  :hook (prog-mode . company-mode)
+  :ensure
+  :custom
+  (company-idle-delay 0.5) ;; how long to wait until popup
+  ;; (company-begin-commands nil) ;; uncomment to disable popup
+  :bind
+  (:map company-active-map
+	("C-n". company-select-next)
+	("C-p". company-select-previous)
+	("M-<". company-select-first)
+	("M->". company-select-last))
+  ("<tab>". tab-indent-or-complete)
+  ("TAB". tab-indent-or-complete))
+(setq lsp-prefer-capf t)
+
+(use-package yasnippet
+  :ensure
   :config
-  (setq company-idle-delay 0
-        company-minimum-prefix-length 1
-        company-tooltip-limit 10))
+  (yas-reload-all)
+  (add-hook 'prog-mode-hook 'yas-minor-mode)
+  (add-hook 'text-mode-hook 'yas-minor-mode))
+
+
+(defun company-yasnippet-or-completion ()
+  (interactive)
+  (or (do-yas-expand)
+      (company-complete-common)))
+
+(defun check-expansion ()
+  (save-excursion
+    (if (looking-at "\\_>") t
+      (backward-char 1)
+      (if (looking-at "\\.") t
+        (backward-char 1)
+        (if (looking-at "::") t nil)))))
+
+(defun do-yas-expand ()
+  (let ((yas/fallback-behavior 'return-nil))
+    (yas/expand)))
+
+(defun tab-indent-or-complete ()
+  (interactive)
+  (if (minibufferp)
+      (minibuffer-complete)
+    (if (or (not yas/minor-mode)
+            (null (do-yas-expand)))
+        (if (check-expansion)
+            (company-complete-common)
+          (indent-for-tab-command)))))
+
+
+;; -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+;; Create / cleanup rust scratch projects quickly
+
+(use-package rust-playground :ensure)
+
+
+;; -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+;; for Cargo.toml and other config files
+
+(use-package toml-mode :ensure)
+
+
+;; -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+;; setting up debugging support with dap-mode
+
+(use-package exec-path-from-shell
+  :ensure
+  :init (exec-path-from-shell-initialize))
+
+(when (executable-find "lldb-mi")
+  (use-package dap-mode
+    :ensure
+    :config
+    (dap-ui-mode)
+    (dap-ui-controls-mode 1)
+
+    (require 'dap-lldb)
+    (require 'dap-gdb-lldb)
+    ;; installs .extension/vscode
+    (dap-gdb-lldb-setup)
+    (dap-register-debug-template
+     "Rust::LLDB Run Configuration"
+     (list :type "lldb"
+           :request "launch"
+           :name "LLDB::Run"
+	   :gdbpath "rust-lldb"
+           ;; uncomment if lldb-mi is not in PATH
+           ;; :lldbmipath "path/to/lldb-mi"
+           ))))
 
 (use-package company-lsp
   :after (company lsp-mode)
@@ -148,11 +290,40 @@
 			 (setq pylint-options '("--max-line-length=88"))
                          (flycheck-mode))))
 
-(use-package rust-mode
-  :mode ("\\.rs\\'")
-  :hook (rust-mode . lsp-deferred)
-  :config 
-  (setq rust-format-on-save t))
+(use-package rustic
+  :ensure
+  :bind (:map rustic-mode-map
+              ("M-j" . lsp-ui-imenu)
+              ("M-?" . lsp-find-references)
+              ("C-c C-c l" . flycheck-list-errors)
+              ("C-c C-c a" . lsp-execute-code-action)
+              ("C-c C-c r" . lsp-rename)
+              ("C-c C-c q" . lsp-workspace-restart)
+              ("C-c C-c Q" . lsp-workspace-shutdown)
+              ("C-c C-c s" . lsp-rust-analyzer-status))
+  :config
+  ;; uncomment for less flashiness
+  ;; (setq lsp-eldoc-hook nil)
+  ;; (setq lsp-enable-symbol-highlighting nil)
+  ;; (setq lsp-signature-auto-activate nil)
+  ;; comment to disable rustfmt on save
+  (setq rustic-format-on-save t)
+  (add-hook 'rustic-mode-hook 'rk/rustic-mode-hook))
+
+(defun rk/rustic-mode-hook ()
+  ;; so that run C-c C-c C-r works without having to confirm, but don't try to
+  ;; save rust buffers that are not file visiting. Once
+  ;; https://github.com/brotzeit/rustic/issues/253 has been resolved this should
+  ;; no longer be necessary.
+  (when buffer-file-name
+    (setq-local buffer-save-without-query t))
+  (add-hook 'before-save-hook 'lsp-format-buffer nil t))
+
+;; (use-package rust-mode
+;;   :mode ("\\.rs\\'")
+;;   :hook (rust-mode . lsp-deferred)
+;;   :config 
+;;   (setq rust-format-on-save t))
 
 (use-package blacken
   :hook (python-mode . blacken-mode)
@@ -168,6 +339,9 @@
   :bind ([f8] . neotree-toggle))
 (setq projectile-switch-project-action 'neotree-projectile-action)
 
+;; Configure tramp for opening files on remote server
+;; for help run "kb tramp"
+(setq tramp-default-method "ssh")
 
 ;; Managing multiple Python versions with Eshell
 ;; Emacs command shell
@@ -210,12 +384,57 @@
 
 
 ;; ORG mode configuration
-
+(load "~/.emacs.d/extend/ob-rust/ob-rust.el")  ;; probably not needed anymore
+;; see https://emacs.stackexchange.com/questions/56126/attempting-to-use-org-babel-to-write-literate-rust
 (org-babel-do-load-languages 'org-babel-load-languages '(
 							 (C . t)
 							 (python . t)
 							 (shell . t)
+							 (rust . t)
 							 ))
+;; Emacs mail sending
+(setq send-mail-function    'smtpmail-send-it
+      smtpmail-smtp-server  "mail.kapsi.fi"
+      smtpmail-stream-type  'ssl
+      smtpmail-smtp-service 465
+      smtpmail-local-domain "sukkeli.com"
+      user-full-name "Petteri Suckman"
+      user-mail-address (concat "$USER@" smtpmail-local-domain))
+
+;; My extras
+(load "~/.emacs.d/extend/henki/henki.el")
+
+
+;; Inserting date easily in current buffer.
+(defun insert-date-in-iso-format ()
+  "Inserts date into current buffer in ISO 8601 format.
+E.g. \"2024-01-26\"."
+  (interactive)
+  (shell-command "date -u +%Y-%m-%d" (current-buffer))
+  (forward-char 10)
+  )
+
+
+(defun run-command-with-sudo (command)
+  "Run the specified COMMAND with sudo, fetching the password from the pass password manager."
+  (interactive "sCommand to run with sudo: ")
+  (let* ((password (string-trim (shell-command-to-string "pass 43rf343g5h545")))
+         (command-with-sudo (concat "echo " password " | sudo -S " command))
+         (buffer (generate-new-buffer "*Sudo Output*")))
+    (with-current-buffer buffer
+      (call-process-shell-command command-with-sudo nil t))
+    (switch-to-buffer buffer)))
+
+(defun ansible-run-playbook(playbook-name)
+  "Runs specified playbook as sudo"
+  (interactive "sPlaybook to run: ")
+  (let* (
+	(playbook-dir "~/code/playbooks/")
+	(full-playbook-path (concat playbook-dir playbook-name))
+	(buffer-name (concat "*Ansible output for play " playbook-name " *")))
+	(with-output-to-temp-buffer buffer-name
+	  (run-command-with-sudo (concat "ansible-playbook " full-playbook-path))
+	  )))
 
 ;; 4. UI MODIFICATIONS
 
@@ -232,27 +451,28 @@
 (setq visible-bell t)
 (setq ring-bell-function 'ignore)
 
+
 ;; Make changing Emacs colour themes easy
 ;; There are three ways to change:
 ;; 1. interactive function "toggle-colour-theme"
 ;; 2. toggle function with "C-c t" keybinding
 ;; 3. with interactiv function "change-theme". Write the theme name in buffer.
 
-(defvar my-color-themes '(material misterioso tango-dark autumn-light cyberpunk)
-  "List of color themes to cycle through.")
+(defvar my-colour-themes '(faff cyberpunk  autumn-light gruvbox afternoon material leuven darcula)
+  "List of colour themes to cycle through.")
 
 (defvar current-theme-index 0
   "Index of the currently selected theme in `my-color-themes` list.")
 
 (defvar current-theme nil
-  "Currently selected color theme.")
+  "Currently selected colour theme.")
 
 (defun toggle-colour-theme ()
-  "Toggle to the next color theme in the list."
+  "Toggle to the next colour theme in the list."
   (interactive)
-  (setq current-theme-index (% (1+ current-theme-index) (length my-color-themes)))
-  (setq current-theme (nth current-theme-index my-color-themes))
-  (load-theme (intern current-theme) t)
+  (setq current-theme-index (% (1+ current-theme-index) (length my-colour-themes)))
+  (setq current-theme (nth current-theme-index my-colour-themes))
+  (load-theme (intern (symbol-name current-theme)) t)
   (message "Switched to %s theme" current-theme))
 
 ;; Initial theme setup (optional)
@@ -260,10 +480,15 @@
 (load-theme current-theme t)
 
 (defun change-theme (name)
-  "Applies a theme given a theme name."
-(interactive "S"
-	     (let (name (read-from-minibuffer "Enter theme name")))
-	     )
+  "Applies a colour theme given a theme name.
+
+Usage:
+- M-x change-theme <RET>
+- <write the theme to change to> <RET>
+"
+  (interactive "S"
+	       (let (name (read-from-minibuffer "Enter theme name")))
+	       )
   (setf current-theme name)
   (load-theme name t)
   (message "Theme set to: %s" name)
@@ -271,24 +496,64 @@
 
 
 (defun get-current-theme ()
+  "Display name of the current colour theme."
   (interactive)
-    (print current-theme)
-)
+  (print current-theme)
+  )
+
+(defun list-colour-themes ()
+  "List locally available colour themes.
+To change to one of the colour themes, use 'change-theme'."
+  (interactive)
+  (message "List of available colour themes: %s" my-colour-themes)
+  )
 
 
 ;; 5. KEYBINDINGS
-(global-set-key (kbd "<f6>")  'toggle-truncate-lines) ;; changes between wrapping lines and truncating $
+;; have to find something else than f6 since Helm needs that for some reason.
+(global-set-key (kbd "C-c l")  'toggle-truncate-lines) ;; changes between wrapping lines and truncating $
 (global-set-key (kbd "C-z") 'eshell)
-(global-set-key (kbd "<f5>") 'recompile)
+;;(global-set-key (kbd "<f8>") 'recompile)
 (global-set-key (kbd "C-+") 'text-scale-increase)
 (global-set-key (kbd "C--") 'text-scale-decrease)
 (global-set-key (kbd "C-c f") 'clang-format-buffer)
 (global-set-key (kbd "<f7>") 'dictionary-lookup-definition)
+(global-set-key (kbd "<f9>") 'improve-python-docstring)
+(global-set-key (kbd "<f3>") 'rustic-cargo-clippy)
+(global-set-key (kbd "<f4>") 'rustic-cargo-build)
+(global-set-key (kbd "<f5>") 'rustic-cargo-run)
+
 (global-set-key (kbd "C-c t") 'toggle-colour-theme)
+(global-set-key (kbd "C-c d") 'insert-date-in-iso-format)
+
+
 ;; Starts Emacs so that you can just "emacsclient myfile"
 ;;   to open buffers in the existing session
 ;;   instead of having different emacs sessions running
 (server-mode 1)
 
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(notmuch-saved-searches
+   '((:name "inbox" :query "tag:inbox" :key "i")
+     (:name "unread" :query "tag:unread" :key "u")
+     (:name "flagged" :query "tag:flagged" :key "f")
+     (:name "sent" :query "tag:sent" :key "t")
+     (:name "drafts" :query "tag:draft" :key "d")
+     (:name "all mail" :query "*" :key "a")
+     (:name "today-nospam" :query "date:today AND tag:inbox AND NOT tag:spam")
+     (:name "since-date-no-spam" :query "date:2023-06-01..today AND not tag:spam AND not tag:promo")
+     (:name "important" :query "date:2023-05-14..today AND not tag:archive AND not tag:spam"))))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )
+
 (provide 'init)
 ;;; init.el ends here
+
