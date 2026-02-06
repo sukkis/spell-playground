@@ -16,6 +16,10 @@
 
 #define CTRL_KEY(k) ((k)&0x1f)
 
+#define _DEFAULT_SOURCE
+#define _BSD_SOURCE
+#define _GNU_SOURCE
+
 enum editorKey {
     ARROW_LEFT = 1000,
     ARROW_RIGHT,
@@ -225,7 +229,7 @@ void editorDrawRows(struct abuf *ab) {
     int y;
     for (y = 0; y < E.screenrows; y++) {
         if (y >= E.numrows) {
-            if (y == E.screenrows / 3) {
+            if (E.numrows == 0 && y == E.screenrows / 3) {
                 char welcome[80];
                 int welcomelen =
                     snprintf(welcome, sizeof(welcome),
